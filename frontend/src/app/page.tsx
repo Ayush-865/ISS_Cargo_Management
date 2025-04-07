@@ -7,6 +7,7 @@ import ZoomControl from "@/components/ZoomControl";
 import { StarryBackground } from '@/components/StarryBackground';
 import Link from 'next/link';
 import { Plus, ZoomIn, ZoomOut, Table, Settings, FileText, Trash } from 'lucide-react';
+import Search from '@/components/SearchRetrieve';
 
 export default function HomePage() {
   const [translateX, setTranslateX] = useState<number>(0);
@@ -85,19 +86,9 @@ export default function HomePage() {
           <StarryBackground />
         </div>
         <div className="relative z-10">
+          {/* Search component added here */}
           <div className="pt-6 pb-4 text-center">
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r 
-              from-blue-400 to-cyan-300 font-space tracking-wider">
-              SPACE INVENTORY MANAGEMENT SYSTEM
-            </h1>
-            <p className="text-blue-400/70 mt-2 text-sm font-space tracking-widest">
-              ISS CARGO TRACKING AND MANAGEMENT
-            </p>
-            <div className="absolute top-6 right-6 flex items-center gap-2 bg-black/20 
-              backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-              <span className="text-white/70 text-sm font-space">SYSTEM ONLINE</span>
-            </div>
+            <Search />
           </div>
 
           {!isLoading && (

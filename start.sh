@@ -1,11 +1,11 @@
 #!/bin/sh
 # Start the backend
-cd /app/backend
+cd /backend
 python -m app.main &
 BACKEND_PID=$!
 
 # Start the frontend
-cd /app/frontend
+cd /frontend
 npm run start &
 FRONTEND_PID=$!
 

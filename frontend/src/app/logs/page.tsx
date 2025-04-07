@@ -263,36 +263,36 @@ export default function LogsTable() {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full table-auto">
-          <thead className="sticky top-0 z-10">
-            <tr className="bg-gray-800 text-gray-300 border-b border-gray-700">
-              <th className="px-4 py-3 text-left font-medium">
-                <div className="flex items-center space-x-2">
-                  <Clock size={14} />
-                  <span>Timestamp</span>
-                </div>
-              </th>
-              <th className="px-4 py-3 text-left font-medium">
-                <div className="flex items-center space-x-2">
-                  <User size={14} />
-                  <span>User</span>
-                </div>
-              </th>
-              <th className="px-4 py-3 text-left font-medium">Action</th>
-              <th className="px-4 py-3 text-left font-medium">
-                <div className="flex items-center space-x-2">
-                  <Package size={14} />
-                  <span>Item</span>
-                </div>
-              </th>
-              <th className="px-4 py-3 text-left font-medium">
-                Movement & Reason
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredLogs.length > 0 ? (
-              filteredLogs.map((log, index) => {
+        {filteredLogs.length > 0 ? (
+          <table className="w-full table-auto">
+            <thead className="sticky top-0 z-10">
+              <tr className="bg-gray-800 text-gray-300 border-b border-gray-700">
+                <th className="px-4 py-3 text-left font-medium">
+                  <div className="flex items-center space-x-2">
+                    <Clock size={14} />
+                    <span>Timestamp</span>
+                  </div>
+                </th>
+                <th className="px-4 py-3 text-left font-medium">
+                  <div className="flex items-center space-x-2">
+                    <User size={14} />
+                    <span>User</span>
+                  </div>
+                </th>
+                <th className="px-4 py-3 text-left font-medium">Action</th>
+                <th className="px-4 py-3 text-left font-medium">
+                  <div className="flex items-center space-x-2">
+                    <Package size={14} />
+                    <span>Item</span>
+                  </div>
+                </th>
+                <th className="px-4 py-3 text-left font-medium">
+                  Movement & Reason
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLogs.map((log, index) => {
                 const { date, time } = formatTimestamp(log.timestamp);
                 return (
                   <tr
@@ -336,16 +336,22 @@ export default function LogsTable() {
                     </td>
                   </tr>
                 );
-              })
-            ) : (
-              <tr>
-                <td colSpan={5} className="text-center py-4 text-gray-400">
-                  No logs found matching the filters
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div className="flex flex-col items-center justify-center min-h-screen py-10">
+            <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center mb-4">
+              <Clock size={32} className="text-gray-400" />
+            </div>
+            <h3 className="text-xl font-medium text-gray-300 mb-2">No logs to display</h3>
+            <p className="text-sm text-gray-400">
+              {startDate || endDate || itemId || userId || actionType 
+                ? "Try adjusting your filters to see more results" 
+                : "There are no activity logs in the system yet"}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -8,7 +8,8 @@ This repository contains a full-stack application for the National Space Hackath
 
 **Research Paper & Report:** [https://drive.google.com/file/d/1Matq5rpAbRrmcsX_2FCJ4XDyzoaocphG/view?usp=sharing](https://drive.google.com/file/d/1Matq5rpAbRrmcsX_2FCJ4XDyzoaocphG/view?usp=sharing)
 
-**Video Link:** [https://drive.google.com/file/d/13MXXCcvZwoIqTtRkCzUBV5I-Fgd0JS9i/view?usp=sharing](https://drive.google.com/file/d/13MXXCcvZwoIqTtRkCzUBV5I-Fgd0JS9i/view?usp=sharing).
+**Video/Demo Link:** [https://drive.google.com/file/d/13MXXCcvZwoIqTtRkCzUBV5I-Fgd0JS9i/view?usp=sharing](https://drive.google.com/file/d/13MXXCcvZwoIqTtRkCzUBV5I-Fgd0JS9i/view?usp=sharing).
+
 ## Project Structure
 
 ```

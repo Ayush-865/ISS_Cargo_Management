@@ -6,7 +6,7 @@ This repository contains a full-stack application for the National Space Hackath
 
 **Backend URL:** [https://national-space-hackathon-91717359690.us-central1.run.app/](https://national-space-hackathon-91717359690.us-central1.run.app/)
 
-**Research Paper & Report:** [https://drive.google.com/file/d/1Matq5rpAbRrmcsX_2FCJ4XDyzoaocphG/view?usp=sharing](https://drive.google.com/file/d/1Matq5rpAbRrmcsX_2FCJ4XDyzoaocphG/view?usp=sharing)
+**Research Paper & Report:** [https://drive.google.com/file/d/1pxMhns39Y0feQn_kL--_e1JCguZMZRMR/view?usp=sharing](https://drive.google.com/file/d/1pxMhns39Y0feQn_kL--_e1JCguZMZRMR/view?usp=sharing)
 
 **Video/Demo Link:** [https://drive.google.com/file/d/13MXXCcvZwoIqTtRkCzUBV5I-Fgd0JS9i/view?usp=sharing](https://drive.google.com/file/d/13MXXCcvZwoIqTtRkCzUBV5I-Fgd0JS9i/view?usp=sharing).
 

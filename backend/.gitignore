@@ -17,6 +17,9 @@ app/.venv
 logs/
 *.log
 
+rs-app/target/
+
+
 # Bytecode
 *.py[cod]
 

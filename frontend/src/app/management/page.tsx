@@ -174,7 +174,7 @@ export default function ManagementPage() {
   const handlePlacement = async () => {
     setIsLoadingPlacement(true);
     setPlacementStatus(null);
-    const batchSize = 500;
+    const batchSize = 2000;
     let processedItems: Item[] = [];
     let remainingItems = [...items];
 

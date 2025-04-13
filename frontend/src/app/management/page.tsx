@@ -91,68 +91,9 @@ export default function ManagementPage() {
   const [showAddContainerModal, setShowAddContainerModal] = useState(false);
   const [listView, setListView] = useState<'items' | 'containers'>('items');
 
-  // Add initial items data
-  const [items, setItems] = useState<Item[]>([
-    {
-      _key: 'default-1',
-      itemId: 'ITEM-001',
-      name: 'Medical Supplies Kit',
-      width: 45,
-      depth: 30,
-      height: 20,
-      mass: 5.5,
-      priority: 1,
-      expiryDate: '2024-12-31',
-      usageLimit: 100,
-      preferredZone: 'medical-bay'
-    },
-    {
-      _key: 'default-2',
-      itemId: 'ITEM-002',
-      name: 'Emergency Food Rations',
-      width: 60,
-      depth: 40,
-      height: 30,
-      mass: 10,
-      priority: 2,
-      expiryDate: '2024-06-30',
-      usageLimit: 50,
-      preferredZone: 'storage'
-    },
-    {
-      _key: 'default-3',
-      itemId: 'ITEM-003',
-      name: 'Space Suit Repair Kit',
-      width: 50,
-      depth: 35,
-      height: 25,
-      mass: 7.5,
-      priority: 1,
-      expiryDate: '2025-12-31',
-      usageLimit: 20,
-      preferredZone: 'airlock'
-    }
-  ]);
-
-  // Add initial containers data
-  const [containers, setContainers] = useState<Container[]>([
-    {
-      _key: 'default-container-1',
-      containerId: 'CONT-001',
-      zone: 'medical-bay',
-      width: 200,
-      depth: 150,
-      height: 180,
-    },
-    {
-      _key: 'default-container-2',
-      containerId: 'CONT-002',
-      zone: 'storage',
-      width: 300,
-      depth: 200,
-      height: 220,
-    }
-  ]);
+  // Initialize with empty arrays
+  const [items, setItems] = useState<Item[]>([]);
+  const [containers, setContainers] = useState<Container[]>([]);
 
   const [isLoadingPlacement, setIsLoadingPlacement] = useState(false);
   const [placementStatus, setPlacementStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -266,7 +207,8 @@ export default function ManagementPage() {
 
         console.log("Sending to Placement API (Batch):", JSON.stringify(apiPayload, null, 2));
 
-        const response = await fetch('http://localhost:8000/api/placement', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+        const response = await fetch(`${apiUrl}/api/placement`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

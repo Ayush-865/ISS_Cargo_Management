@@ -4,6 +4,7 @@ mod placement_service;
 mod db_models;
 
 use actix_web::{web, App, HttpServer, middleware};
+use actix_cors::Cors;
 use placement_service::PlacementService;
 use env_logger::Env;
 use sqlx::{SqlitePool, migrate::MigrateDatabase, Sqlite};
@@ -56,7 +57,15 @@ async fn main() -> std::io::Result<()> {
     println!("Starting server at http://127.0.0.1:8080");
 
     HttpServer::new(move || {
+        // Configure CORS middleware
+        let cors = Cors::default()
+            .allow_any_origin() // In production, you'd want to restrict this to your frontend origin
+            .allow_any_method()
+            .allow_any_header()
+            .max_age(3600); // 1 hour cache for preflight requests
+
         App::new()
+            .wrap(cors) // Add CORS middleware first
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default())
             .app_data(web::Data::new(db_pool.clone()))

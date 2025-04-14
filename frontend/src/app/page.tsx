@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Papa from 'papaparse';
 import ISS from "@/components/ISS";
 import ZoomControl from "@/components/ZoomControl"; 
@@ -22,6 +22,7 @@ export default function HomePage() {
     totalItems: 0
   });
   const [isLoading, setIsLoading] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   interface Item {
     id: string;
@@ -31,6 +32,49 @@ export default function HomePage() {
   
   const [containers, setContainers] = useState<any[]>([]);
   const [items, setItems] = useState<Item[]>([]);
+
+  // SVG dimensions
+  const svgWidth = 1804;
+  const svgHeight = 811;
+
+  // Safe boundary function to constrain panning
+  const constrainTranslation = (x: number, y: number) => {
+    if (!containerRef.current) return { x, y };
+    
+    const containerWidth = containerRef.current.clientWidth;
+    const containerHeight = containerRef.current.clientHeight;
+    
+    // Allow some margin around the edges
+    const margin = 100;
+    
+    // Calculate boundaries
+    const minX = Math.min(-(svgWidth * scale - containerWidth) - margin, 0);
+    const maxX = margin;
+    const minY = Math.min(-(svgHeight * scale - containerHeight) - margin, 0);
+    const maxY = margin;
+    
+    return {
+      x: Math.max(minX, Math.min(x, maxX)),
+      y: Math.max(minY, Math.min(y, maxY))
+    };
+  };
+
+  // Safe setter functions for translation that enforce boundaries
+  const safeSetTranslateX = (value: number | ((prev: number) => number)) => {
+    setTranslateX(prev => {
+      const newValue = typeof value === 'function' ? value(prev) : value;
+      const { x } = constrainTranslation(newValue, translateY);
+      return x;
+    });
+  };
+
+  const safeSetTranslateY = (value: number | ((prev: number) => number)) => {
+    setTranslateY(prev => {
+      const newValue = typeof value === 'function' ? value(prev) : value;
+      const { y } = constrainTranslation(translateX, newValue);
+      return y;
+    });
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -49,6 +93,13 @@ export default function HomePage() {
         })
     ]).finally(() => setIsLoading(false));
   }, []);
+
+  // Apply constraints whenever scale changes
+  useEffect(() => {
+    const { x, y } = constrainTranslation(translateX, translateY);
+    setTranslateX(x);
+    setTranslateY(y);
+  }, [scale]);
 
   const resetView = () => {
     setTranslateX(0);
@@ -70,7 +121,7 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="h-screen bg-[#01041f] flex items-center justify-center">
+      <div className="h-screen max-h-screen bg-[#01041f] flex items-center justify-center overflow-hidden">
         <div className="text-white/90 text-lg animate-pulse font-space">
           Initializing System...
         </div>
@@ -79,25 +130,25 @@ export default function HomePage() {
   }
 
   return (
-    <div className="h-screen">
-      <div className="relative h-screen bg-[#01041f]">
-        <div className="absolute inset-0">
+    <div className="h-screen max-h-screen overflow-hidden" ref={containerRef}>
+      {/* Fixed Search Bar - No background */}
+      
+      <div className="relative h-screen max-h-screen bg-[#01041f]">
+        <div className="fixed top-0 left-0 right-0 z-50 pt-6 pb-4 px-4">
+          <Search />
+        </div>
+        {/* <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#01041f] via-[#041835] to-[#082b33]" />
           <StarryBackground />
-        </div>
-        <div className="relative z-10">
-          {/* Search component added here */}
-          <div className="pt-6 pb-4 text-center">
-            <Search />
-          </div>
-
+        </div> */}
+        <div className="relative z-10 pt-20"> {/* Added padding top to account for fixed search bar */}
           {!isLoading && (
             <>
               <ISS
                 translateX={translateX}
-                setTranslateX={setTranslateX}
+                setTranslateX={safeSetTranslateX}
                 translateY={translateY}
-                setTranslateY={setTranslateY}
+                setTranslateY={safeSetTranslateY}
                 scale={scale}
                 setScale={setScale}
                 tooltip={tooltip}

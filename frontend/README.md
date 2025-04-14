@@ -34,3 +34,28 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## ISS Assistant Chatbot
+
+The application includes an AI-powered chatbot to assist users with queries about the International Space Station and inventory management.
+
+### Setup
+
+1. Obtain a Google AI Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Add your API key to the `.env.local` file:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
+3. The chatbot uses the `gemini-2.0-flash` model for quick responses
+
+### Features
+
+- Accessible from any page via the floating chat button
+- Provides information about ISS inventory and operations
+- Maintains conversation context for follow-up questions
+
+### Future Enhancements
+
+- RAG (Retrieval-Augmented Generation) integration for more accurate ISS-specific responses
+- Custom knowledge base with ISS inventory data
+- Conversation history persistence

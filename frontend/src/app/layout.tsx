@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { Share_Tech_Mono } from 'next/font/google';
 import './globals.css';
 import Providers from '@/providers/Providers';
+import { ChatBot } from '@/components/ChatBot';
 
 const inter = Inter({ subsets: ['latin'] });
 const spaceMono = Share_Tech_Mono({ 
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${inter.className} ${spaceMono.variable}`}>
         <Providers>{children}</Providers>
+        <ChatBot />
       </body>
     </html>
   );

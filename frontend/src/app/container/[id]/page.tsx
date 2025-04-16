@@ -4,8 +4,8 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Papa from 'papaparse';
-import StarBackground from '@/components/StarBackground';
 import ItemViewer3D from '@/components/ItemViewer3D';
+import { Package, Box, ArrowLeft, Archive } from 'lucide-react';
 
 interface Item {
   id: string;
@@ -46,29 +46,36 @@ export default function ContainerPage() {
   if (!params?.id) return null;
 
   return (
-    <div className="relative min-h-screen bg-black">
-      <StarBackground />
-      
+    <div className="w-full h-full min-h-screen bg-gray-800 text-gray-100">
       {/* Main content with scroll */}
-      <div className="relative z-10 h-screen overflow-y-auto">
+      <div className="h-screen overflow-y-auto">
         <div className="container mx-auto p-8">
-          <div className="sticky top-0 z-20 backdrop-blur-md bg-black/30 p-4 rounded-lg shadow-xl mb-8">
+          {/* Header */}
+          <div className="sticky top-0 z-20 bg-gray-800 border-b border-gray-700 p-4 rounded-lg shadow-xl mb-8">
             <div className="flex justify-between items-center">
-              <h1 className="text-3xl font-bold text-white">
-                Container Details
-              </h1>
-              <div className="space-x-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-md bg-indigo-500 flex items-center justify-center">
+                  <Archive size={18} className="text-white" />
+                </div>
+                <h1 className="text-xl font-bold tracking-tight text-white">
+                  Container Details
+                </h1>
+              </div>
+              <div className="flex items-center">
+                <div className="text-md px-3 mr-3 py-1 rounded-md bg-gray-700 text-gray-300">
+                  {items.length} items
+                </div>
                 {/* <Link 
                   href={`/zone/${items[0]?.zoneId || ''}`}
-                  className="px-4 py-2 backdrop-blur-sm bg-white/20 hover:bg-white/30 rounded-lg text-white transition-all"
+                  className="px-4 py-2 mr-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white transition-colors duration-200"
                 >
                   ← Back to Zone
                 </Link> */}
                 <Link 
                   href="/"
-                  className="px-4 py-2 backdrop-blur-sm bg-white/20 hover:bg-white/30 rounded-lg text-white transition-all"
+                  className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white transition-colors duration-200"
                 >
-                  ← Back to Map
+                  <ArrowLeft size={16} className="inline mr-1" /> Back to Map
                 </Link>
               </div>
             </div>
@@ -76,10 +83,10 @@ export default function ContainerPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
             {items.map(item => (
-              <div key={item.id} className="backdrop-blur-md bg-white/10 rounded-lg overflow-hidden border border-white/20">
+              <div key={item.id} className="bg-gray-700 rounded-lg overflow-hidden border border-gray-600">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-white/90">{item.name}</h2>
+                    <h2 className="text-xl font-semibold text-white">{item.name}</h2>
                     <span className={`px-3 py-1 text-sm rounded-full ${
                       getPriorityColor(item.priority)
                     }`}>
@@ -90,18 +97,18 @@ export default function ContainerPage() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-white/70">Category</p>
-                        <p className="font-medium text-white/90">{item.category}</p>
+                        <p className="text-gray-300">Category</p>
+                        <p className="font-medium text-white">{item.category}</p>
                       </div>
                       <div>
-                        <p className="text-white/70">Quantity</p>
-                        <p className="font-medium text-white/90">{item.quantity} units</p>
+                        <p className="text-gray-300">Quantity</p>
+                        <p className="font-medium text-white">{item.quantity} units</p>
                       </div>
                     </div>
 
                     <div>
-                      <p className="text-white/70">Position</p>
-                      <div className="text-sm bg-white/5 p-2 rounded">
+                      <p className="text-gray-300">Position</p>
+                      <div className="text-sm bg-gray-800 p-2 rounded">
                         <p>Start: ({item.position_start_width}, {item.position_start_depth}, {item.position_start_height})</p>
                         <p>End: ({item.position_end_width}, {item.position_end_depth}, {item.position_end_height})</p>
                       </div>
@@ -109,19 +116,19 @@ export default function ContainerPage() {
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-white/70">Mass</p>
-                        <p className="font-medium text-white/90">{item.mass} kg</p>
+                        <p className="text-gray-300">Mass</p>
+                        <p className="font-medium text-white">{item.mass} kg</p>
                       </div>
                       <div>
-                        <p className="text-white/70">Usage</p>
-                        <p className="font-medium text-white/90">{item.usageCount}/{item.usageLimit}</p>
+                        <p className="text-gray-300">Usage</p>
+                        <p className="font-medium text-white">{item.usageCount}/{item.usageLimit}</p>
                       </div>
                     </div>
 
                     <div className="pt-2">
-                      <p className="text-white/70">Expiration Date</p>
+                      <p className="text-gray-300">Expiration Date</p>
                       <p className={`font-medium ${
-                        isNearExpiry(item.expirationDate) ? 'text-red-400' : 'text-white/90'
+                        isNearExpiry(item.expirationDate) ? 'text-red-400' : 'text-white'
                       }`}>
                         {new Date(item.expirationDate).toLocaleDateString()}
                       </p>
@@ -134,10 +141,13 @@ export default function ContainerPage() {
 
           {/* 3D Items Viewer */}
           <div className="mt-12">
-            <h2 className="text-2xl font-bold text-white mb-6">
+            <h2 className="text-xl font-bold text-white mb-6 flex items-center">
+              <div className="w-8 h-8 rounded-md bg-indigo-500 flex items-center justify-center mr-2">
+                <Box size={18} className="text-white" />
+              </div>
               3D Items Visualization
             </h2>
-            <div className="bg-white/5 backdrop-blur-lg rounded-xl p-1">
+            <div className="bg-gray-700 border border-gray-600 rounded-xl p-1">
                 <ItemViewer3D items={items.map(item => ({
                   ...item,
                   width: item.position_end_width - item.position_start_width,
@@ -154,13 +164,13 @@ export default function ContainerPage() {
 
 function getPriorityColor(priority: 1 | 2 | 3 | 4 | 5 | number) {
   const colors = {
-    1: 'bg-red-400 text-red-900',
-    2: 'bg-orange-400 text-orange-900',
-    3: 'bg-yellow-400 text-yellow-900',
-    4: 'bg-blue-400 text-blue-900',
-    5: 'bg-green-400 text-green-900'
+    1: 'bg-red-600 text-white',
+    2: 'bg-orange-500 text-white',
+    3: 'bg-yellow-500 text-yellow-900',
+    4: 'bg-blue-500 text-white',
+    5: 'bg-green-500 text-white'
   };
-  return colors[priority as keyof typeof colors] || 'bg-gray-400 text-gray-900';
+  return colors[priority as keyof typeof colors] || 'bg-gray-500 text-white';
 }
 
 interface ExpiryCheck {

@@ -47,7 +47,25 @@ export default function AddItemModal({ onClose, onSubmit }: AddItemModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Format data properly before submission
+    const formattedData = {
+      ...formData,
+      // Ensure numerical values are numbers
+      width: typeof formData.width === 'string' ? parseFloat(formData.width) : formData.width,
+      depth: typeof formData.depth === 'string' ? parseFloat(formData.depth) : formData.depth,
+      height: typeof formData.height === 'string' ? parseFloat(formData.height) : formData.height,
+      mass: typeof formData.mass === 'string' ? parseFloat(formData.mass) : formData.mass,
+      priority: typeof formData.priority === 'string' ? parseInt(formData.priority, 10) : formData.priority,
+      // Ensure date is in ISO format with Z timezone
+      expiryDate: formData.expiryDate ? `${new Date(formData.expiryDate).toISOString().split('.')[0]}Z` : null,
+      // Ensure usageLimit is a number
+      usageLimit: typeof formData.usageLimit === 'string' 
+        ? parseInt(formData.usageLimit.replace(/\D/g, ''), 10) || null 
+        : formData.usageLimit,
+    };
+    
+    onSubmit(formattedData);
     onClose();
   };
 
@@ -145,7 +163,10 @@ export default function AddItemModal({ onClose, onSubmit }: AddItemModalProps) {
               <input
                 type="date"
                 value={formData.expiryDate?.split('T')[0] || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, expiryDate: e.target.value ? new Date(e.target.value).toISOString() : null }))}
+                onChange={(e) => setFormData(prev => ({ 
+                  ...prev, 
+                  expiryDate: e.target.value ? `${new Date(e.target.value).toISOString().split('.')[0]}Z` : null 
+                }))}
                 className="w-full bg-gray-700 rounded-md px-3 py-2 text-white border border-gray-600"
               />
             </div>

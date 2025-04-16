@@ -37,7 +37,17 @@ export default function AddContainerModal({ onClose, onSubmit }: AddContainerMod
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Format data properly before submission
+    const formattedData = {
+      ...formData,
+      // Ensure numerical values are numbers
+      width: typeof formData.width === 'string' ? parseFloat(formData.width) : formData.width,
+      depth: typeof formData.depth === 'string' ? parseFloat(formData.depth) : formData.depth,
+      height: typeof formData.height === 'string' ? parseFloat(formData.height) : formData.height,
+    };
+    
+    onSubmit(formattedData);
     onClose();
   };
 

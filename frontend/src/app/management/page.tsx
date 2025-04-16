@@ -205,12 +205,27 @@ export default function ManagementPage() {
   };
 
   const handleAddItemManually = (newItem: Omit<Item, '_key'>) => {
-    setItems(prevItems => [...prevItems, { ...newItem, _key: `manual-${Date.now()}` }]);
+    // Format the date as ISO string if it exists
+    const formattedItem = {
+      ...newItem,
+      expiryDate: newItem.expiryDate ? new Date(newItem.expiryDate).toISOString() : null,
+      usageLimit: typeof newItem.usageLimit === 'string' ? parseInt(newItem.usageLimit.replace(/\D/g, ''), 10) || null : newItem.usageLimit,
+    };
+    
+    setItems(prevItems => [...prevItems, { ...formattedItem, _key: `manual-${Date.now()}` }]);
     toast.success(`Added item: ${newItem.name}`);
   };
 
   const handleAddContainerManually = (newContainer: Omit<Container, '_key'>) => {
-    setContainers(prevContainers => [...prevContainers, { ...newContainer, _key: `manual-cont-${Date.now()}` }]);
+    // Ensure all numerical values are proper numbers, not strings
+    const formattedContainer = {
+      ...newContainer,
+      width: typeof newContainer.width === 'string' ? parseFloat(newContainer.width) : newContainer.width,
+      depth: typeof newContainer.depth === 'string' ? parseFloat(newContainer.depth) : newContainer.depth,
+      height: typeof newContainer.height === 'string' ? parseFloat(newContainer.height) : newContainer.height,
+    };
+    
+    setContainers(prevContainers => [...prevContainers, { ...formattedContainer, _key: `manual-cont-${Date.now()}` }]);
     toast.success(`Added container: ${newContainer.containerId}`);
   };
 
@@ -231,26 +246,49 @@ export default function ManagementPage() {
         const batch = remainingItems.slice(0, batchSize);
         remainingItems = remainingItems.slice(batchSize);
 
+        // Ensure all items have properly formatted data
+        const formattedItems = batch.map(item => ({
+          itemId: item.itemId,
+          name: item.name,
+          width: Number(item.width),
+          depth: Number(item.depth),
+          height: Number(item.height),
+          mass: Number(item.mass),
+          priority: Number(item.priority),
+          // Format date with Z timezone indicator
+          expiryDate: item.expiryDate ? item.expiryDate.endsWith('Z') ? item.expiryDate : `${new Date(item.expiryDate).toISOString().split('.')[0]}Z` : null,
+          usageLimit: typeof item.usageLimit === 'string' 
+            ? parseInt(item.usageLimit.replace(/\D/g, ''), 10) || null 
+            : typeof item.usageLimit === 'number' ? item.usageLimit : null,
+          preferredZone: item.preferredZone,
+        })).filter(item => 
+          item.itemId && 
+          item.name && 
+          !isNaN(item.width) && 
+          !isNaN(item.depth) && 
+          !isNaN(item.height) && 
+          !isNaN(item.mass) && 
+          !isNaN(item.priority)
+        );
+
+        // Ensure all containers have properly formatted data
+        const formattedContainers = containers.map(cont => ({
+          containerId: cont.containerId,
+          zone: cont.zone,
+          width: Number(cont.width),
+          depth: Number(cont.depth),
+          height: Number(cont.height),
+        })).filter(cont => 
+          cont.containerId && 
+          cont.zone && 
+          !isNaN(cont.width) && 
+          !isNaN(cont.depth) && 
+          !isNaN(cont.height)
+        );
+
         const apiPayload = {
-          items: batch.map(item => ({
-            itemId: item.itemId,
-            name: item.name,
-            width: item.width,
-            depth: item.depth,
-            height: item.height,
-            mass: item.mass,
-            priority: item.priority,
-            expiryDate: item.expiryDate,
-            usageLimit: typeof item.usageLimit === 'string' ? parseInt(item.usageLimit.replace(/\D/g, ''), 10) || null : item.usageLimit,
-            preferredZone: item.preferredZone,
-          })).filter(item => item.itemId && item.name && item.width !== null && item.depth !== null && item.height !== null && item.mass !== null && item.priority !== null),
-          containers: containers.map(cont => ({
-            containerId: cont.containerId,
-            zone: cont.zone,
-            width: cont.width,
-            depth: cont.depth,
-            height: cont.height,
-          })).filter(cont => cont.containerId && cont.zone && cont.width !== null && cont.depth !== null && cont.height !== null),
+          items: formattedItems,
+          containers: formattedContainers,
         };
 
         console.log("Sending to Placement API (Batch):", JSON.stringify(apiPayload, null, 2));

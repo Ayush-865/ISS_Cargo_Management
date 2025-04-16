@@ -46,10 +46,10 @@ fn default_current_uses() -> i32 {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub enum ItemStatus {
-    Active,
-    Waste,
-    InTransit,
-    Removed,
+    ACTIVE,
+    WASTE_EXPIRED,
+    WASTE_DEPLETED,
+    DISPOSED,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -168,7 +168,7 @@ impl Item {
     pub fn is_waste(&self) -> bool {
         // Check if status is explicitly set to Waste
         if let Some(status) = &self.status {
-            if *status == ItemStatus::Waste {
+            if *status == ItemStatus::WASTE_EXPIRED || *status == ItemStatus::WASTE_DEPLETED {
                 return true;
             }
         }

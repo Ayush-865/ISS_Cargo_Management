@@ -548,7 +548,7 @@ pub async fn optimize_placement(
          match sqlx::query(
             r#"
             INSERT INTO items ("itemId", name, width, depth, height, mass, priority, "expiryDate", "usageLimit", "currentUses", "preferredZone", status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVE')
             ON CONFLICT("itemId") DO UPDATE SET
                 name=excluded.name,
                 width=excluded.width,
@@ -560,7 +560,7 @@ pub async fn optimize_placement(
                 "usageLimit"=excluded."usageLimit",
                 -- currentUses = currentUses, -- Don't reset uses on placement update
                 "preferredZone"=excluded."preferredZone",
-                status='active' -- Ensure item is marked active on placement/move
+                status='ACTIVE' -- Ensure item is marked active on placement/move
             "#)
             .bind(item_id)
             .bind(req_item_data.map_or("Unknown", |i| &i.name))

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS items (
     "usageLimit" INTEGER,
     "currentUses" INTEGER NOT NULL DEFAULT 0,
     "preferredZone" TEXT,
-    status TEXT CHECK(status IN ('active', 'expired', 'depleted', 'disposed')) NOT NULL DEFAULT 'active'
+    status TEXT CHECK(status IN ('ACTIVE', 'WASTE_EXPIRED', 'WASTE_DEPLETED', 'DISPOSED')) NOT NULL DEFAULT 'ACTIVE'
 );
 
 -- Create Containers Table

@@ -23,7 +23,7 @@ pub struct DbItem {
     pub current_uses: i64, // Changed from Integer to i64
     #[sqlx(rename = "preferredZone")]
     pub preferred_zone: Option<String>,
-    pub status: String, // Store status as string, map to enum in logic if needed
+    pub status: String, // Store status as uppercase string: "ACTIVE", "WASTE_EXPIRED", "WASTE_DEPLETED", "DISPOSED"
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize, Clone)]

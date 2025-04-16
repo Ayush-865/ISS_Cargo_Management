@@ -43,7 +43,7 @@ impl PlacementService {
         // Process each item
         for item in sorted_items {
             if let Some(status) = &item.status {
-                if status == &ItemStatus::Waste {
+                if status == &ItemStatus::WASTE_EXPIRED || status == &ItemStatus::WASTE_DEPLETED {
                     continue; // Skip waste items
                 }
             }

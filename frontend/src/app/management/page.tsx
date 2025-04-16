@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import Link from 'next/link';
-import { Plus, Upload, ChevronDown, Send } from 'lucide-react';
+import { Plus, Upload, ChevronDown, Send, Package, ArrowRightCircle } from 'lucide-react';
 import Papa from 'papaparse';
+import toast, { Toaster } from 'react-hot-toast';
 import ItemsList from '@/components/management/ItemsList';
 import AddItemModal from '@/components/management/AddItemModal';
 import AddContainerModal from '@/components/management/AddContainerModal';
-import StarBackground from '@/components/StarBackground';
 
 interface Item {
   itemId: string;
@@ -38,6 +38,32 @@ interface DropdownButtonProps {
   bgColor: string;
   hoverColor: string;
   options: { label: string; onClick: () => void }[];
+}
+
+// Add interfaces for placement data
+interface PlacementPosition {
+  startCoordinates: { width: number; depth: number; height: number };
+  endCoordinates: { width: number; depth: number; height: number };
+}
+
+interface PlacementItem {
+  itemId: string;
+  containerId: string;
+  position: PlacementPosition;
+}
+
+interface RearrangementItem {
+  itemId: string;
+  fromContainerId: string;
+  toContainerId: string;
+  position: PlacementPosition;
+}
+
+interface PlacementResponse {
+  success: boolean;
+  placements: PlacementItem[];
+  rearrangements: RearrangementItem[];
+  error: string | null;
 }
 
 function DropdownButton({ label, icon, bgColor, hoverColor, options }: DropdownButtonProps) {
@@ -97,6 +123,12 @@ export default function ManagementPage() {
 
   const [isLoadingPlacement, setIsLoadingPlacement] = useState(false);
   const [placementStatus, setPlacementStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  
+  // Add state for placement response
+  const [placementResponse, setPlacementResponse] = useState<PlacementResponse | null>(null);
+  const [activeTab, setActiveTab] = useState<'setup' | 'placements' | 'rearrangements'>('setup');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
 
   const itemCsvInputRef = useRef<HTMLInputElement>(null);
   const containerCsvInputRef = useRef<HTMLInputElement>(null);
@@ -107,6 +139,10 @@ export default function ManagementPage() {
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    const loadingToast = toast.loading(`Parsing ${type} CSV file...`, {
+      duration: Infinity // Prevent auto-dismissing
+    });
 
     Papa.parse(file, {
       header: true,
@@ -121,10 +157,13 @@ export default function ManagementPage() {
         if (event.target) {
           event.target.value = '';
         }
+        toast.dismiss(loadingToast);
+        toast.success(`Successfully imported ${type}s from CSV`);
       },
       error: (error: any) => {
         console.error(`Error parsing ${type} CSV:`, error);
-        alert(`Error parsing ${type} CSV: ${error.message}`);
+        toast.dismiss(loadingToast);
+        toast.error(`Error parsing ${type} CSV: ${error.message}`);
         if (event.target) {
           event.target.value = '';
         }
@@ -148,6 +187,7 @@ export default function ManagementPage() {
     })).filter(item => item.name !== 'Unnamed Item');
 
     setItems(prevItems => [...prevItems, ...newItems]);
+    toast.success(`Added ${newItems.length} items`);
   };
 
   const processContainerCsvData = (data: Record<string, string>[]) => {
@@ -161,14 +201,17 @@ export default function ManagementPage() {
     })).filter(cont => cont.zone !== 'Default Zone');
 
     setContainers(prevContainers => [...prevContainers, ...newContainers]);
+    toast.success(`Added ${newContainers.length} containers`);
   };
 
   const handleAddItemManually = (newItem: Omit<Item, '_key'>) => {
     setItems(prevItems => [...prevItems, { ...newItem, _key: `manual-${Date.now()}` }]);
+    toast.success(`Added item: ${newItem.name}`);
   };
 
   const handleAddContainerManually = (newContainer: Omit<Container, '_key'>) => {
     setContainers(prevContainers => [...prevContainers, { ...newContainer, _key: `manual-cont-${Date.now()}` }]);
+    toast.success(`Added container: ${newContainer.containerId}`);
   };
 
   const handlePlacement = async () => {
@@ -177,6 +220,11 @@ export default function ManagementPage() {
     const batchSize = 2000;
     let processedItems: Item[] = [];
     let remainingItems = [...items];
+
+    // Show loading toast that persists until explicitly dismissed
+    const loadingToast = toast.loading('Calculating optimal placement...', {
+      duration: Infinity // This will prevent the toast from auto-dismissing
+    });
 
     try {
       while (remainingItems.length > 0) {
@@ -224,9 +272,23 @@ export default function ManagementPage() {
         const result = await response.json();
         console.log('Placement API Success (Batch):', result);
         processedItems = [...processedItems, ...batch];
+        
+        // Store the placement response
+        setPlacementResponse(result);
+        // Switch to placements tab
+        setActiveTab('placements');
       }
+      
+      // Dismiss loading toast and show success toast
+      toast.dismiss(loadingToast);
+      toast.success(`Placement calculated successfully for ${processedItems.length} items!`);
+      
       setPlacementStatus({ type: 'success', message: 'Placement calculated successfully for all batches!' });
     } catch (error: any) {
+      // Dismiss loading toast and show error toast
+      toast.dismiss(loadingToast);
+      toast.error(`Placement failed: ${error.message}`);
+      
       console.error('Placement API Failed:', error);
       setPlacementStatus({ type: 'error', message: `Placement failed: ${error.message}` });
     } finally {
@@ -234,9 +296,63 @@ export default function ManagementPage() {
     }
   };
 
+  // Helper function to format position coordinates
+  const formatPosition = (position: PlacementPosition) => {
+    const { startCoordinates, endCoordinates } = position;
+    return `${startCoordinates.width}x${startCoordinates.depth}x${startCoordinates.height} → ${endCoordinates.width}x${endCoordinates.depth}x${endCoordinates.height}`;
+  };
+
+  // Get paginated data for current view
+  const getPaginatedData = () => {
+    if (!placementResponse) return [];
+    
+    const data = activeTab === 'placements' 
+      ? placementResponse.placements 
+      : placementResponse.rearrangements;
+    
+    const startIdx = (currentPage - 1) * itemsPerPage;
+    const endIdx = startIdx + itemsPerPage;
+    
+    return data.slice(startIdx, endIdx);
+  };
+
+  // Get total pages for pagination
+  const getTotalPages = () => {
+    if (!placementResponse) return 1;
+    
+    const totalItems = activeTab === 'placements' 
+      ? placementResponse.placements.length 
+      : placementResponse.rearrangements.length;
+    
+    return Math.ceil(totalItems / itemsPerPage);
+  };
+
   return (
-    <div className="relative min-h-screen bg-black text-white">
-      <StarBackground />
+    <div className="w-full h-full min-h-[100vh] bg-gray-800 text-gray-100 rounded-lg shadow-xl overflow-hidden">
+      {/* Toaster for notifications */}
+      {/* <Toaster
+        position="top-right"
+        toastOptions={{
+          success: {
+            style: {
+              background: '#1E40AF',
+              color: 'white',
+            },
+          },
+          error: {
+            style: {
+              background: '#991B1B',
+              color: 'white',
+            },
+          },
+          loading: {
+            style: {
+              background: '#374151',
+              color: 'white',
+            },
+          },
+        }}
+      /> */}
 
       {/* Hidden File Inputs */}
       <input
@@ -254,127 +370,299 @@ export default function ManagementPage() {
         onChange={(e) => handleFileChange(e, 'container')}
       />
 
-      <div className="relative z-10 min-h-screen">
-        <header className="sticky top-0 backdrop-blur-md bg-black/30 border-b border-white/10">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-white">Storage Management</h1>
-              <Link
-                href="/"
-                className="px-4 py-2 text-white/70 hover:text-white transition-colors"
-              >
-                ← Back to Map
-              </Link>
-            </div>
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-md bg-blue-600 flex items-center justify-center">
+            <Package size={20} className="text-white" />
+          </div>
+          <h2 className="text-xl font-bold tracking-tight text-white">
+            Inventory Management System
+          </h2>
+        </div>
+        <div className="text-md px-3 mr-2 py-1 rounded-md bg-gray-700 text-gray-300">
+          {items.length} items / {containers.length} containers
+        </div>
+      </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-between items-center mt-4">
-              <div className="ml-auto flex gap-4 z-50 relative">
-                <DropdownButton
-                  label="Add Item"
-                  icon={<Plus className="w-4 h-4" />}
-                  bgColor="bg-green-600"
-                  hoverColor="hover:bg-green-700"
-                  options={[
-                    { label: 'Add Manually', onClick: () => setShowAddItemModal(true) },
-                    { label: 'Upload CSV', onClick: () => itemCsvInputRef.current?.click() },
-                  ]}
-                />
-                <DropdownButton
-                  label="Add Container"
-                  icon={<Plus className="w-4 h-4" />}
-                  bgColor="bg-blue-600"
-                  hoverColor="hover:bg-blue-700"
-                  options={[
-                    { label: 'Add Manually', onClick: () => setShowAddContainerModal(true) },
-                    { label: 'Upload CSV', onClick: () => containerCsvInputRef.current?.click() },
-                  ]}
-                />
+      {/* Main content */}
+      <div className="p-6">
+        {/* Tabs Navigation */}
+        <div className="flex border-b border-gray-700 mb-6">
+          <button
+            onClick={() => setActiveTab('setup')}
+            className={`px-4 py-2 font-medium ${
+              activeTab === 'setup'
+                ? 'text-blue-500 border-b-2 border-blue-500'
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+          >
+            Inventory Setup
+          </button>
+          <button
+            onClick={() => setActiveTab('placements')}
+            className={`px-4 py-2 font-medium ${
+              activeTab === 'placements'
+                ? 'text-blue-500 border-b-2 border-blue-500'
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+            disabled={!placementResponse}
+          >
+            Placements ({placementResponse?.placements.length || 0})
+          </button>
+          <button
+            onClick={() => setActiveTab('rearrangements')}
+            className={`px-4 py-2 font-medium ${
+              activeTab === 'rearrangements'
+                ? 'text-blue-500 border-b-2 border-blue-500'
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+            disabled={!placementResponse}
+          >
+            Rearrangements ({placementResponse?.rearrangements.length || 0})
+          </button>
+        </div>
+
+        {activeTab === 'setup' && (
+          <>
+            <div className="flex justify-between items-center mb-6">
+              <div className="space-x-2">
                 <button
-                  onClick={handlePlacement}
-                  disabled={isLoadingPlacement || (items.length === 0 && containers.length === 0)}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`px-4 py-2 rounded-md ${
+                    listView === 'items'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                  onClick={() => setListView('items')}
                 >
-                  {isLoadingPlacement ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-                      Calculating...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" /> Placement
-                    </>
-                  )}
+                  Items
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-md ${
+                    listView === 'containers'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                  onClick={() => setListView('containers')}
+                >
+                  Containers
                 </button>
               </div>
 
-              {placementStatus && (
-                <div className={`text-sm px-3 py-1 rounded ${placementStatus.type === 'success' ? 'bg-green-500/30 text-green-300' : 'bg-red-500/30 text-red-300'}`}>
-                  {placementStatus.message}
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
+              <div className="flex space-x-2">
+                <DropdownButton
+                  label="Add"
+                  icon={<Plus className="h-4 w-4" />}
+                  bgColor="bg-green-600"
+                  hoverColor="hover:bg-green-700"
+                  options={[
+                    { label: 'Add Item Manually', onClick: () => setShowAddItemModal(true) },
+                    { label: 'Add Container Manually', onClick: () => setShowAddContainerModal(true) },
+                  ]}
+                />
 
-        <main className="container mx-auto px-4 py-8">
-          {/* Main Layout (adjust grid cols if PlacementView is used) */}
-          {/* <div className="grid grid-cols-2 gap-8"> */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"> {/* Adjusted for potential right panel */}
-            {/* Left Panel: Items/Containers List */}
-            <div className="backdrop-blur-md bg-white/5 rounded-xl p-6 flex flex-col"> {/* Added flex flex-col */}
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setListView('items')}
-                    className={`px-4 py-2 rounded-lg transition-colors ${listView === 'items' ? 'bg-blue-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white/70'
-                      }`}
-                  >
-                    Items ({items.length})
-                  </button>
-                  <button
-                    onClick={() => setListView('containers')}
-                    className={`px-4 py-2 rounded-lg transition-colors ${listView === 'containers' ? 'bg-blue-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white/70'
-                      }`}
-                  >
-                    Containers ({containers.length})
-                  </button>
-                </div>
-                {/* Optional: Add clear buttons or other actions here */}
+                <DropdownButton
+                  label="Import"
+                  icon={<Upload className="h-4 w-4" />}
+                  bgColor="bg-purple-600"
+                  hoverColor="hover:bg-purple-700"
+                  options={[
+                    { label: 'Import Items from CSV', onClick: () => itemCsvInputRef.current?.click() },
+                    { label: 'Import Containers from CSV', onClick: () => containerCsvInputRef.current?.click() },
+                  ]}
+                />
+
+                <button
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors"
+                  onClick={handlePlacement}
+                  disabled={isLoadingPlacement || items.length === 0 || containers.length === 0}
+                >
+                  <Send className="h-4 w-4" /> Calculate Placement
+                </button>
               </div>
-
-              {/* Pass state down to ItemsList */}
-              <ItemsList
-                mode={listView}
-                items={items}
-                containers={containers}
-                // onSelect={activeTab === 'placement' ? setSelectedItem : undefined} // Keep if needed
-              />
             </div>
 
-            {/* Right Panel: Placement View or other content */}
-            {/* Uncomment and adjust if you have a PlacementView */}
-            {/* <div className="backdrop-blur-md bg-white/5 rounded-xl p-6">
-                                                <PlacementView
-                                                    mode={activeTab}
-                                                    selectedItem={selectedItem}
-                                                    onPlacementComplete={() => setSelectedItem(null)}
-                                                    // You might want to pass the placement API result here
-                                                />
-                                            </div> */}
-          </div>
-        </main>
-      </div>
+            {/* Display items or containers based on the selected view */}
+            <ItemsList
+              items={listView === 'items' ? items : containers}
+              type={listView}
+              onDelete={(itemKey) => {
+                if (listView === 'items') {
+                  setItems(items.filter(item => item._key !== itemKey));
+                } else {
+                  setContainers(containers.filter(container => container._key !== itemKey));
+                }
+              }}
+            />
 
-      {/* Modals */}
-      {showAddItemModal && <AddItemModal
-        onClose={() => setShowAddItemModal(false)}
-        onAdd={handleAddItemManually} // Pass the handler
-      />}
-      {showAddContainerModal && <AddContainerModal
-        onClose={() => setShowAddContainerModal(false)}
-        // onAdd={handleAddContainerManually} // Pass the handler (assuming AddContainerModal has onAdd)
-      />}
+            {/* Status message */}
+            {placementStatus && (
+              <div className={`mt-4 p-3 rounded-md ${placementStatus.type === 'success' ? 'bg-green-800' : 'bg-red-800'}`}>
+                {placementStatus.message}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Placements View */}
+        {activeTab === 'placements' && placementResponse && (
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">Placement Details</h3>
+            
+            <div className="overflow-x-auto bg-gray-700 rounded-lg">
+              <table className="min-w-full divide-y divide-gray-600">
+                <thead className="bg-gray-600">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Step</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Item</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Container</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Position</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-700 divide-y divide-gray-600">
+                  {(getPaginatedData() as PlacementItem[]).map((placement, index) => (
+                    <tr key={`${placement.itemId}-${index}`} className="hover:bg-gray-650">
+                      <td className="px-4 py-3 text-sm font-medium text-white">
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </td>
+                      <td className="px-4 py-3 text-sm font-medium">
+                        <span className="px-2 py-1 bg-gray-600 text-gray-200 text-xs font-mono rounded">
+                          {placement.itemId}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <span className="px-2 py-1 bg-blue-600 text-gray-200 text-xs font-mono rounded">
+                          {placement.containerId}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-300 font-mono">
+                        {formatPosition(placement.position)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            {getTotalPages() > 1 && (
+              <div className="flex justify-center mt-4 space-x-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 bg-gray-700 rounded-md disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="px-3 py-1 bg-gray-700 rounded-md">
+                  {currentPage} of {getTotalPages()}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
+                  disabled={currentPage === getTotalPages()}
+                  className="px-3 py-1 bg-gray-700 rounded-md disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Rearrangements View */}
+        {activeTab === 'rearrangements' && placementResponse && (
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">Rearrangements Details</h3>
+            
+            {placementResponse.rearrangements.length === 0 ? (
+              <div className="bg-gray-700 p-4 rounded-lg text-gray-300">
+                No rearrangements needed.
+              </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto bg-gray-700 rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-600">
+                    <thead className="bg-gray-600">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Step</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Item</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">From Container</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">To Container</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Position</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-gray-700 divide-y divide-gray-600">
+                      {(getPaginatedData() as RearrangementItem[]).map((rearrangement, index) => (
+                        <tr key={`${rearrangement.itemId}-${index}`} className="hover:bg-gray-650">
+                          <td className="px-4 py-3 text-sm font-medium text-white">
+                            {(currentPage - 1) * itemsPerPage + index + 1}
+                          </td>
+                          <td className="px-4 py-3 text-sm font-medium">
+                            <span className="px-2 py-1 bg-gray-600 text-gray-200 text-xs font-mono rounded">
+                              {rearrangement.itemId}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                            <span className="px-2 py-1 bg-purple-600 text-gray-200 text-xs font-mono rounded">
+                              {rearrangement.fromContainerId}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                            <span className="px-2 py-1 bg-blue-600 text-gray-200 text-xs font-mono rounded">
+                              {rearrangement.toContainerId}
+                            </span>
+                            <ArrowRightCircle className="inline ml-1 h-4 w-4" />
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-300 font-mono">
+                            {formatPosition(rearrangement.position)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                {getTotalPages() > 1 && (
+                  <div className="flex justify-center mt-4 space-x-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1 bg-gray-700 rounded-md disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    <span className="px-3 py-1 bg-gray-700 rounded-md">
+                      {currentPage} of {getTotalPages()}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, getTotalPages()))}
+                      disabled={currentPage === getTotalPages()}
+                      className="px-3 py-1 bg-gray-700 rounded-md disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Modals */}
+        {showAddItemModal && (
+          <AddItemModal
+            onClose={() => setShowAddItemModal(false)}
+            onSubmit={handleAddItemManually}
+          />
+        )}
+        {showAddContainerModal && (
+          <AddContainerModal
+            onClose={() => setShowAddContainerModal(false)}
+            onSubmit={handleAddContainerManually}
+          />
+        )}
+      </div>
     </div>
   );
 }

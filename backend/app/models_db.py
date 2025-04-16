@@ -41,7 +41,6 @@ class LogActionType(str, enum.Enum):
     EXPORT = "export"                   # Bulk export of data
 
 # --- SQLAlchemy ORM Models ---
-
 class Item(Base):
     """Represents an individual inventory item."""
     __tablename__ = "items"

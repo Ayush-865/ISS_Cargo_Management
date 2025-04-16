@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react';
-import Papa from 'papaparse';
 import ISS from "@/components/ISS";
 import ZoomControl from "@/components/ZoomControl"; 
 import { StarryBackground } from '@/components/StarryBackground';
@@ -78,20 +77,17 @@ export default function HomePage() {
 
   useEffect(() => {
     setIsLoading(true);
-    Promise.all([
-      fetch('/data/containers.csv')
-        .then(response => response.text())
-        .then(csv => {
-          const data = Papa.parse(csv, { header: true }).data;
-          setContainers(data);
-        }),
-      fetch('/data/items.csv')
-        .then(response => response.text())
-        .then(csv => {
-          const data = Papa.parse(csv, { header: true }).data as Item[];
-          setItems(data);
-        })
-    ]).finally(() => setIsLoading(false));
+    
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/frontend/placements`)
+      .then(response => response.json())
+      .then(data => {
+        setContainers(data.containers || []);
+        setItems(data.items || []);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   // Apply constraints whenever scale changes

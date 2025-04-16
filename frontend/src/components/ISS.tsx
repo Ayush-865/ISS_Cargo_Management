@@ -1,7 +1,46 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import "@/app/globals.css";
 import { useRouter } from "next/navigation";
+
+// Define mapping from SVG zone IDs to API zone IDs
+const zoneMapping: Record<string, string[]> = {
+  // SVG ID -> API IDs (array of possible matches)
+  "storage-1": ["Storage_Bay", "External_Storage"],
+  "storage-2": ["External_Storage", "Storage_Bay"],
+  "service-module": ["Command_Center", "Life_Support"],
+  "fgb": ["Engineering_Bay", "Power_Bay"],
+  "node-2": ["Crew_Quarters"],
+  "us-lab": ["Lab"],
+  "jap-lab": ["Greenhouse"],
+  "node-1": ["Maintenance_Bay", "Sanitation_Bay"],
+  "airlock": ["Airlock"],
+  "soyuz-1": ["Cockpit", "Engine_Bay"],
+  "cupola": ["Medical_Bay"],
+  "columbus": ["Lab"],
+  "poisk": ["Power_Bay"],
+  "rassvet": ["Life_Support"],
+  "nauka": ["Engineering_Bay"],
+};
+
+// Define display names for the zones
+const zoneDisplayNames: Record<string, string> = {
+  "storage-1": "Storage Bay",
+  "storage-2": "External Storage",
+  "service-module": "Command Center",
+  "fgb": "Engineering Bay",
+  "node-2": "Crew Quarters",
+  "us-lab": "Laboratory",
+  "jap-lab": "Greenhouse",
+  "node-1": "Maintenance Bay",
+  "airlock": "Airlock",
+  "soyuz-1": "Cockpit",
+  "cupola": "Medical Bay",
+  "columbus": "Laboratory",
+  "poisk": "Power Bay",
+  "rassvet": "Life Support",
+  "nauka": "Engineering Bay",
+};
 
 const ISS = ({
   translateX,
@@ -48,11 +87,46 @@ const ISS = ({
     router.push(`/zone/${zoneId}`);
   };
 
-  const getZoneStats = (zoneId: string) => {
-    const zoneContainers = containers.filter((c) => c.zoneId === zoneId);
-    const zoneItems = items.filter((i) =>
-      zoneContainers.some((c) => c.id === i.containerId)
+  // Create a reverse mapping to check if a container's zoneId matches any of our SVG zones
+  const reverseZoneMapping = useMemo(() => {
+    const mapping: Record<string, string[]> = {};
+    
+    Object.entries(zoneMapping).forEach(([svgZoneId, apiZoneIds]) => {
+      apiZoneIds.forEach(apiZoneId => {
+        if (!mapping[apiZoneId]) {
+          mapping[apiZoneId] = [];
+        }
+        mapping[apiZoneId].push(svgZoneId);
+      });
+    });
+    
+    return mapping;
+  }, []);
+
+  const getZoneStats = (svgZoneId: string) => {
+    // Get the API zone IDs that match this SVG zone ID
+    const apiZoneIds = zoneMapping[svgZoneId] || [];
+    
+    // Check if containers is an array (defensive programming)
+    if (!Array.isArray(containers)) {
+      return { totalContainers: 0, totalItems: 0 };
+    }
+    
+    // Find containers in any of the matching API zones
+    const zoneContainers = containers.filter(c => 
+      c && c.zoneId && apiZoneIds.includes(c.zoneId)
     );
+    
+    // Check if items is an array (defensive programming)
+    if (!Array.isArray(items)) {
+      return { totalContainers: zoneContainers.length, totalItems: 0 };
+    }
+    
+    // Find items in those containers
+    const zoneItems = items.filter(i =>
+      i && i.containerId && zoneContainers.some(c => c.id === i.containerId)
+    );
+    
     return {
       totalContainers: zoneContainers.length,
       totalItems: zoneItems.length,
@@ -65,14 +139,13 @@ const ISS = ({
     title: string
   ) => {
     const stats = getZoneStats(zoneId);
-    const rect = (e.target as SVGElement).getBoundingClientRect();
     setTooltip({
       visible: true,
       x: e.clientX,
       y: e.clientY,
-      title,
-      totalContainers : stats.totalContainers,
-      totalItems : stats.totalItems,
+      title: zoneDisplayNames[zoneId] || title,
+      totalContainers: stats.totalContainers,
+      totalItems: stats.totalItems,
     });
   };
 

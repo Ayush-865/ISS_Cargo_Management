@@ -3,9 +3,27 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import Papa from 'papaparse';
-import ItemViewer3D from '@/components/ItemViewer3D';
+import ContainerItemViewer3D from '@/components/ContainerItemViewer3D';
 import { Package, Box, ArrowLeft, Archive } from 'lucide-react';
+
+interface Container {
+  id: string;
+  name: string;
+  type: string;
+  zoneId: string;
+  width: number;
+  depth: number;
+  height: number;
+  capacity: number;
+  start_width: number;
+  start_depth: number;
+  start_height: number;
+  end_width: number;
+  end_depth: number;
+  end_height: number;
+  currentWeight: number;
+  maxWeight: number;
+}
 
 interface Item {
   id: string;
@@ -22,24 +40,39 @@ interface Item {
   mass: number;
   usageCount: number;
   usageLimit: number;
-  expirationDate: string;
+  expirationDate: string | null;
   containerId: string;
-  zoneId: string;
+  preferredZone: string;
+}
+
+interface ApiResponse {
+  containers: Container[];
+  items: Item[];
 }
 
 export default function ContainerPage() {
   const params = useParams();
   const [items, setItems] = useState<Item[]>([]);
+  const [container, setContainer] = useState<Container | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!params?.id) return;
     
-    fetch('/data/items.csv')
-      .then(response => response.text())
-      .then(csv => {
-        const data = Papa.parse(csv, { header: true }).data as Item[];
-        const containerItems = data.filter(i => i.containerId === params.id);
+    setLoading(true);
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/frontend/placements`)
+      .then(response => response.json())
+      .then((data: ApiResponse) => {
+        const containerItems = data.items.filter(i => i.containerId === params.id);
         setItems(containerItems);
+        
+        const foundContainer = data.containers.find(c => c.id === params.id);
+        setContainer(foundContainer || null);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching placement data:', error);
+        setLoading(false);
       });
   }, [params?.id]);
 
@@ -58,19 +91,21 @@ export default function ContainerPage() {
                   <Archive size={18} className="text-white" />
                 </div>
                 <h1 className="text-xl font-bold tracking-tight text-white">
-                  Container Details
+                  {container?.name || 'Container Details'}
                 </h1>
               </div>
               <div className="flex items-center">
                 <div className="text-md px-3 mr-3 py-1 rounded-md bg-gray-700 text-gray-300">
                   {items.length} items
                 </div>
-                {/* <Link 
-                  href={`/zone/${items[0]?.zoneId || ''}`}
-                  className="px-4 py-2 mr-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white transition-colors duration-200"
-                >
-                  ← Back to Zone
-                </Link> */}
+                {container && (
+                  <Link 
+                    href={`/zone/${container.zoneId}`}
+                    className="px-4 py-2 mr-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white transition-colors duration-200"
+                  >
+                    ← Back to Zone
+                  </Link>
+                )}
                 <Link 
                   href="/"
                   className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white transition-colors duration-200"
@@ -81,81 +116,89 @@ export default function ContainerPage() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
-            {items.map(item => (
-              <div key={item.id} className="bg-gray-700 rounded-lg overflow-hidden border border-gray-600">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-white">{item.name}</h2>
-                    <span className={`px-3 py-1 text-sm rounded-full ${
-                      getPriorityColor(item.priority)
-                    }`}>
-                      Priority {item.priority}
-                    </span>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-300">Category</p>
-                        <p className="font-medium text-white">{item.category}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-300">Quantity</p>
-                        <p className="font-medium text-white">{item.quantity} units</p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-gray-300">Position</p>
-                      <div className="text-sm bg-gray-800 p-2 rounded">
-                        <p>Start: ({item.position_start_width}, {item.position_start_depth}, {item.position_start_height})</p>
-                        <p>End: ({item.position_end_width}, {item.position_end_depth}, {item.position_end_height})</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-300">Mass</p>
-                        <p className="font-medium text-white">{item.mass} kg</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-300">Usage</p>
-                        <p className="font-medium text-white">{item.usageCount}/{item.usageLimit}</p>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <p className="text-gray-300">Expiration Date</p>
-                      <p className={`font-medium ${
-                        isNearExpiry(item.expirationDate) ? 'text-red-400' : 'text-white'
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
+              {items.map(item => (
+                <div key={item.id} className="bg-gray-700 rounded-lg overflow-hidden border border-gray-600">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-semibold text-white">{item.name}</h2>
+                      <span className={`px-3 py-1 text-sm rounded-full ${
+                        getPriorityColor(item.priority)
                       }`}>
-                        {new Date(item.expirationDate).toLocaleDateString()}
-                      </p>
+                        Priority {item.priority}
+                      </span>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-300">Category</p>
+                          <p className="font-medium text-white">{item.category}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-300">Quantity</p>
+                          <p className="font-medium text-white">{item.quantity} units</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-gray-300">Position</p>
+                        <div className="text-sm bg-gray-800 p-2 rounded">
+                          <p>Start: ({item.position_start_width}, {item.position_start_depth}, {item.position_start_height})</p>
+                          <p>End: ({item.position_end_width}, {item.position_end_depth}, {item.position_end_height})</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-300">Mass</p>
+                          <p className="font-medium text-white">{item.mass} kg</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-300">Usage</p>
+                          <p className="font-medium text-white">{item.usageCount}/{item.usageLimit}</p>
+                        </div>
+                      </div>
+
+                      {item.expirationDate && (
+                        <div className="pt-2">
+                          <p className="text-gray-300">Expiration Date</p>
+                          <p className={`font-medium ${
+                            isNearExpiry(item.expirationDate) ? 'text-red-400' : 'text-white'
+                          }`}>
+                            {new Date(item.expirationDate).toLocaleDateString()}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* 3D Items Viewer */}
-          <div className="mt-12">
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center">
-              <div className="w-8 h-8 rounded-md bg-indigo-500 flex items-center justify-center mr-2">
-                <Box size={18} className="text-white" />
+          {!loading && items.length > 0 && container && (
+            <div className="mt-12">
+              <h2 className="text-xl font-bold text-white mb-6 flex items-center">
+                <div className="w-8 h-8 rounded-md bg-indigo-500 flex items-center justify-center mr-2">
+                  <Box size={18} className="text-white" />
+                </div>
+                3D Container Visualization
+              </h2>
+              <div className="bg-gray-700 border border-gray-600 rounded-xl p-1">
+                <ContainerItemViewer3D 
+                  items={items} 
+                  container={container}
+                />
               </div>
-              3D Items Visualization
-            </h2>
-            <div className="bg-gray-700 border border-gray-600 rounded-xl p-1">
-                <ItemViewer3D items={items.map(item => ({
-                  ...item,
-                  width: item.position_end_width - item.position_start_width,
-                  depth: item.position_end_depth - item.position_start_depth,
-                  height: item.position_end_height - item.position_start_height
-                }))} />
-              </div>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,0 +1,197 @@
+{
+    "items": [
+      {
+        "itemId": "item080",
+        "name": "Crew Sleeping Pod",
+        "width": 350,
+        "depth": 300,
+        "height": 300,
+        "mass": 50.0,
+        "priority": 90,
+        "expiryDate": "2035-01-01T00:00:00Z",
+        "usageLimit": 1,
+        "preferredZone": "Crew_Quarters"
+      },
+      {
+        "itemId": "item081",
+        "name": "Personal Storage Locker",
+        "width": 400,
+        "depth": 350,
+        "height": 450,
+        "mass": 15.0,
+        "priority": 95,
+        "expiryDate": "2040-01-01T00:00:00Z",
+        "usageLimit": 1,
+        "preferredZone": "Storage_Bay"
+      },
+      {
+        "itemId": "item082",
+        "name": "EVA Suit (Extravehicular Activity)",
+         "width": 200,
+        "depth": 200,
+        "height": 250,
+        "mass": 80.0,
+        "priority": 95,
+        "expiryDate": "2032-01-01T00:00:00Z",
+        "usageLimit": 5,
+        "preferredZone": "Airlock"
+      },
+      {
+        "itemId": "item084",
+        "name": "Emergency Oxygen Tank (EVA)",
+        "width": 300,
+        "depth": 250,
+        "height": 300,
+        "mass": 20.0,
+        "priority": 92,
+        "expiryDate": "2030-06-01T00:00:00Z",
+        "usageLimit": 1,
+        "preferredZone": "Medical_Bay"
+      },
+      {
+        "itemId": "item085",
+        "name": "Emergency Oxygen Tank (EVA)",
+        "width": 350,
+        "depth": 300,
+        "height": 400,
+        "mass": 20.0,
+        "priority": 92,
+        "expiryDate": "2030-06-01T00:00:00Z",
+        "usageLimit": 1,
+        "preferredZone": "Maintenance_Bay"
+      },
+      {
+        "itemId": "item086",
+        "name": "Personal Storage Locker",
+        "width": 400,
+        "depth": 350,
+        "height": 400,
+        "mass": 15.0,
+        "priority": 95,
+        "expiryDate": "2040-01-01T00:00:00Z",
+        "usageLimit": 1,
+        "preferredZone": "Engineering_Bay"
+      },
+      {
+        "itemId": "item087",
+        "name": "EVA Suit (Extravehicular Activity)",
+         "width": 350,
+        "depth": 300,
+        "height": 300,
+        "mass": 80.0,
+        "priority": 95,
+        "expiryDate": "2032-01-01T00:00:00Z",
+        "usageLimit": 5,
+        "preferredZone": "Command_Center"
+      }
+      
+      
+    ],
+    "containers": [
+      {
+        "containerId": "cont009",
+        "zone": "Crew_Quarters",
+        "width": 350,
+        "depth": 300,
+        "height": 300
+      },
+      {
+        "containerId": "cont010",
+        "zone": "Storage_Bay",
+        "width": 400,
+        "depth": 350,
+        "height": 450
+      },
+      {
+        "containerId": "cont011",
+        "zone": "Airlock",
+        "width": 200,
+        "depth": 200,
+        "height": 250
+      },
+      {
+        "containerId": "cont012",
+        "zone": "Medical_Bay",
+        "width": 300,
+        "depth": 250,
+        "height": 300
+      },
+      {
+        "containerId": "cont013",
+        "zone": "Maintenance_Bay",
+        "width": 350,
+        "depth": 300,
+        "height": 400
+      },
+      {
+        "containerId": "cont014",
+        "zone": "Engineering_Bay",
+        "width": 400,
+        "depth": 350,
+        "height": 400
+      },
+      {
+        "containerId": "cont015",
+        "zone": "Command_Center",
+        "width": 350,
+        "depth": 300,
+        "height": 300
+      },
+      {
+        "containerId": "cont016",
+        "zone": "Cockpit",
+        "width": 250,
+        "depth": 200,
+        "height": 200
+      },
+      {
+        "containerId": "cont017",
+        "zone": "Power_Bay",
+        "width": 400,
+        "depth": 350,
+        "height": 450
+      },
+      {
+        "containerId": "cont018",
+        "zone": "External_Storage",
+        "width": 450,
+        "depth": 400,
+        "height": 500
+      },
+      {
+        "containerId": "cont019",
+        "zone": "Lab",
+        "width": 350,
+        "depth": 300,
+        "height": 350
+      },
+      {
+        "containerId": "cont020",
+        "zone": "Engine_Bay",
+        "width": 500,
+        "depth": 400,
+        "height": 500
+      },
+      {
+        "containerId": "cont021",
+        "zone": "Sanitation_Bay",
+        "width": 150,
+        "depth": 150,
+        "height": 200
+      },
+      {
+        "containerId": "cont022",
+        "zone": "Life_Support",
+        "width": 300,
+        "depth": 250,
+        "height": 400
+      },
+      {
+        "containerId": "cont023",
+        "zone": "Greenhouse",
+        "width": 400,
+        "depth": 300,
+        "height": 300
+      }
+    ]
+  }

@@ -1,0 +1,16 @@
+container_id,zone,width_cm,depth_cm,height_cm
+cont009,Crew_Quarters,350,300,300
+cont010,Storage_Bay,400,350,450
+cont011,Airlock,200,200,250
+cont012,Medical_Bay,300,250,300
+cont013,Maintenance_Bay,350,300,400
+cont014,Engineering_Bay,400,350,400
+cont015,Command_Center,350,300,300
+cont016,Cockpit,250,200,200
+cont017,Power_Bay,400,350,450
+cont018,External_Storage,450,400,500
+cont019,Lab,350,300,350
+cont020,Engine_Bay,500,400,500
+cont021,Sanitation_Bay,150,150,200
+cont022,Life_Support,300,250,400
+cont023,Greenhouse,400,300,300

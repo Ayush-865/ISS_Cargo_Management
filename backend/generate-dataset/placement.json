@@ -1,0 +1,411 @@
+{
+  "items": [
+    {
+      "itemId": "item042",
+      "name": "Crew Sleeping Pod",
+      "width": 200,
+      "depth": 200,
+      "height": 250,
+      "mass": 50.0,
+      "priority": 70,
+      "expiryDate": "2035-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Crew_Quarters"
+    },
+    {
+      "itemId": "item043",
+      "name": "Personal Storage Locker",
+      "width": 80,
+      "depth": 80,
+      "height": 150,
+      "mass": 15.0,
+      "priority": 65,
+      "expiryDate": "2040-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Crew_Quarters"
+    },
+    {
+      "itemId": "item044",
+      "name": "EVA Suit (Extravehicular Activity)",
+      "width": 250,
+      "depth": 200,
+      "height": 150,
+      "mass": 80.0,
+      "priority": 75,
+      "expiryDate": "2032-01-01T00:00:00Z",
+      "usageLimit": 5,
+      "preferredZone": "Airlock"
+    },
+    {
+      "itemId": "item045",
+      "name": "Emergency Oxygen Tank (EVA)",
+      "width": 100,
+      "depth": 100,
+      "height": 200,
+      "mass": 20.0,
+      "priority": 72,
+      "expiryDate": "2030-06-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Airlock"
+    },
+    {
+      "itemId": "item046",
+      "name": "Medical Diagnostic Scanner",
+      "width": 150,
+      "depth": 120,
+      "height": 200,
+      "mass": 30.0,
+      "priority": 78,
+      "expiryDate": "2033-01-01T00:00:00Z",
+      "usageLimit": 2,
+      "preferredZone": "Medical_Bay"
+    },
+    {
+      "itemId": "item047",
+      "name": "Surgical Instrument Kit",
+      "width": 80,
+      "depth": 60,
+      "height": 50,
+      "mass": 5.0,
+      "priority": 71,
+      "expiryDate": "2035-01-01T00:00:00Z",
+      "usageLimit": 10,
+      "preferredZone": "Medical_Bay"
+    },
+    {
+      "itemId": "item048",
+      "name": "Robotic Repair Arm",
+      "width": 200,
+      "depth": 150,
+      "height": 300,
+      "mass": 45.0,
+      "priority": 73,
+      "expiryDate": "2032-01-01T00:00:00Z",
+      "usageLimit": 3,
+      "preferredZone": "Maintenance_Bay"
+    },
+    {
+      "itemId": "item049",
+      "name": "3D Printer (Small Scale)",
+      "width": 250,
+      "depth": 200,
+      "height": 200,
+      "mass": 35.0,
+      "priority": 70,
+      "expiryDate": "2034-01-01T00:00:00Z",
+      "usageLimit": 2,
+      "preferredZone": "Maintenance_Bay"
+    },
+    {
+      "itemId": "item050",
+      "name": "Fusion Reactor Coolant",
+      "width": 300,
+      "depth": 300,
+      "height": 400,
+      "mass": 300.0,
+      "priority": 79,
+      "expiryDate": "2040-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Engineering_Bay"
+    },
+    {
+      "itemId": "item051",
+      "name": "Antimatter Containment Unit",
+      "width": 100,
+      "depth": 100,
+      "height": 100,
+      "mass": 500.0,
+      "priority": 80,
+      "expiryDate": "2050-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Engineering_Bay"
+    },
+    {
+      "itemId": "item052",
+      "name": "Navigation Control Panel",
+      "width": 200,
+      "depth": 100,
+      "height": 150,
+      "mass": 25.0,
+      "priority": 76,
+      "expiryDate": "2033-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Command_Center"
+    },
+    {
+      "itemId": "item053",
+      "name": "Communication Console",
+      "width": 200,
+      "depth": 150,
+      "height": 150,
+      "mass": 30.0,
+      "priority": 74,
+      "expiryDate": "2033-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Command_Center"
+    },
+    {
+      "itemId": "item054",
+      "name": "Pilot Seat (Captain)",
+      "width": 100,
+      "depth": 100,
+      "height": 150,
+      "mass": 20.0,
+      "priority": 68,
+      "expiryDate": "2040-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Cockpit"
+    },
+    {
+      "itemId": "item055",
+      "name": "Flight Control Stick",
+      "width": 50,
+      "depth": 50,
+      "height": 80,
+      "mass": 5.0,
+      "priority": 69,
+      "expiryDate": "2038-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Cockpit"
+    },
+    {
+      "itemId": "item056",
+      "name": "Solar Panel Array (Folded)",
+      "width": 400,
+      "depth": 100,
+      "height": 100,
+      "mass": 60.0,
+      "priority": 77,
+      "expiryDate": "2035-01-01T00:00:00Z",
+      "usageLimit": 2,
+      "preferredZone": "Power_Bay"
+    },
+    {
+      "itemId": "item057",
+      "name": "Backup Battery Unit",
+      "width": 250,
+      "depth": 200,
+      "height": 250,
+      "mass": 100.0,
+      "priority": 75,
+      "expiryDate": "2032-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Power_Bay"
+    },
+    {
+      "itemId": "item058",
+      "name": "External Tool Rack",
+      "width": 300,
+      "depth": 100,
+      "height": 400,
+      "mass": 40.0,
+      "priority": 67,
+      "expiryDate": "2033-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "External_Storage"
+    },
+    {
+      "itemId": "item059",
+      "name": "Meteoroid Shielding Panels",
+      "width": 450,
+      "depth": 50,
+      "height": 450,
+      "mass": 150.0,
+      "priority": 68,
+      "expiryDate": "2035-01-01T00:00:00Z",
+      "usageLimit": 10,
+      "preferredZone": "External_Storage"
+    },
+    {
+      "itemId": "item060",
+      "name": "Biological Sample Freezer",
+      "width": 200,
+      "depth": 150,
+      "height": 200,
+      "mass": 50.0,
+      "priority": 72,
+      "expiryDate": "2032-01-01T00:00:00Z",
+      "usageLimit": 3,
+      "preferredZone": "Lab"
+    },
+    {
+      "itemId": "item061",
+      "name": "Microscope (High Resolution)",
+      "width": 100,
+      "depth": 80,
+      "height": 150,
+      "mass": 15.0,
+      "priority": 70,
+      "expiryDate": "2034-01-01T00:00:00Z",
+      "usageLimit": 5,
+      "preferredZone": "Lab"
+    },
+    {
+      "itemId": "item062",
+      "name": "Ion Thruster Fuel Tank",
+      "width": 450,
+      "depth": 400,
+      "height": 450,
+      "mass": 400.0,
+      "priority": 79,
+      "expiryDate": "2035-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Engine_Bay"
+    },
+    {
+      "itemId": "item063",
+      "name": "Engine Diagnostic Computer",
+      "width": 150,
+      "depth": 100,
+      "height": 100,
+      "mass": 10.0,
+      "priority": 73,
+      "expiryDate": "2033-01-01T00:00:00Z",
+      "usageLimit": 2,
+      "preferredZone": "Engine_Bay"
+    },
+    {
+      "itemId": "item064",
+      "name": "Waste Recycling Unit",
+      "width": 200,
+      "depth": 200,
+      "height": 300,
+      "mass": 60.0,
+      "priority": 66,
+      "expiryDate": "2030-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Sanitation_Bay"
+    },
+    {
+      "itemId": "item065",
+      "name": "Water Purification System",
+      "width": 250,
+      "depth": 200,
+      "height": 350,
+      "mass": 80.0,
+      "priority": 71,
+      "expiryDate": "2031-01-01T00:00:00Z",
+      "usageLimit": 1,
+      "preferredZone": "Life_Support"
+    },
+    {
+      "itemId": "item066",
+      "name": "Hydroponics Grow Lights",
+      "width": 300,
+      "depth": 100,
+      "height": 50,
+      "mass": 10.0,
+      "priority": 69,
+      "expiryDate": "2036-01-01T00:00:00Z",
+      "usageLimit": 10,
+      "preferredZone": "Greenhouse"
+    }
+  ],
+  "containers": [
+    {
+      "containerId": "cont009",
+      "zone": "Crew_Quarters",
+      "width": 350,
+      "depth": 300,
+      "height": 300
+    },
+    {
+      "containerId": "cont010",
+      "zone": "Storage_Bay",
+      "width": 400,
+      "depth": 350,
+      "height": 450
+    },
+    {
+      "containerId": "cont011",
+      "zone": "Airlock",
+      "width": 200,
+      "depth": 200,
+      "height": 250
+    },
+    {
+      "containerId": "cont012",
+      "zone": "Medical_Bay",
+      "width": 300,
+      "depth": 250,
+      "height": 300
+    },
+    {
+      "containerId": "cont013",
+      "zone": "Maintenance_Bay",
+      "width": 350,
+      "depth": 300,
+      "height": 400
+    },
+    {
+      "containerId": "cont014",
+      "zone": "Engineering_Bay",
+      "width": 400,
+      "depth": 350,
+      "height": 400
+    },
+    {
+      "containerId": "cont015",
+      "zone": "Command_Center",
+      "width": 350,
+      "depth": 300,
+      "height": 300
+    },
+    {
+      "containerId": "cont016",
+      "zone": "Cockpit",
+      "width": 250,
+      "depth": 200,
+      "height": 200
+    },
+    {
+      "containerId": "cont017",
+      "zone": "Power_Bay",
+      "width": 400,
+      "depth": 350,
+      "height": 450
+    },
+    {
+      "containerId": "cont018",
+      "zone": "External_Storage",
+      "width": 450,
+      "depth": 400,
+      "height": 500
+    },
+    {
+      "containerId": "cont019",
+      "zone": "Lab",
+      "width": 350,
+      "depth": 300,
+      "height": 350
+    },
+    {
+      "containerId": "cont020",
+      "zone": "Engine_Bay",
+      "width": 500,
+      "depth": 400,
+      "height": 500
+    },
+    {
+      "containerId": "cont021",
+      "zone": "Sanitation_Bay",
+      "width": 150,
+      "depth": 150,
+      "height": 200
+    },
+    {
+      "containerId": "cont022",
+      "zone": "Life_Support",
+      "width": 300,
+      "depth": 250,
+      "height": 400
+    },
+    {
+      "containerId": "cont023",
+      "zone": "Greenhouse",
+      "width": 400,
+      "depth": 300,
+      "height": 300
+    }
+  ]
+}

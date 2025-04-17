@@ -179,18 +179,24 @@ export function ItemsTable() {
       ACTIVE: "bg-green-600",
       WASTE_EXPIRED: "bg-rose-600",
       WASTE_DEPLETED: "bg-amber-500",
+      DISPOSED: "bg-gray-600",
     };
 
     const colorClass = colorMap[normalizedStatus] ?? "bg-gray-500";
+
+    // Map status to display text
+    let displayText = '';
+    if (status === 'active') displayText = 'Active';
+    else if (status === 'expired') displayText = 'Waste Expired';
+    else if (status === 'depleted') displayText = 'Waste Depleted';
+    else if (status === 'disposed') displayText = 'Disposed';
+    else displayText = String(status).charAt(0).toUpperCase() + String(status).slice(1);
 
     return (
       <span
         className={`px-2 py-1 rounded-full text-xs font-medium text-white ${colorClass} shadow-sm shadow-black/20`}
       >
-        {status
-          .replace("_", " ")
-          .toLowerCase()
-          .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase())}
+        {displayText}
       </span>
     );
   };
@@ -240,7 +246,11 @@ export function ItemsTable() {
               <SelectItem value="all">All Statuses</SelectItem>
               {Object.values(ItemStatus).map((status) => (
                 <SelectItem key={status} value={status}>
-                  {status.replace("_", " ").toLowerCase()}
+                  {status === 'active' ? 'Active' : 
+                   status === 'expired' ? 'Waste Expired' :
+                   status === 'depleted' ? 'Waste Depleted' :
+                   status === 'disposed' ? 'Disposed' : 
+                   String(status).charAt(0).toUpperCase() + String(status).slice(1)}
                 </SelectItem>
               ))}
             </SelectContent>

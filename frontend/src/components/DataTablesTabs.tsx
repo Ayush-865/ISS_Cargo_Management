@@ -10,7 +10,7 @@ export function DataTablesTabs() {
   const handleExport = async () => {
     try {
       const response = await fetch(
-        "https://national-space-hackathon-1-91717359690.us-central1.run.app/api/export/arrangement"
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/export/arrangement`
       );
 
       if (!response.ok) {

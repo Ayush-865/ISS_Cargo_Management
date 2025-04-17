@@ -4,8 +4,9 @@
 
 export enum ItemStatus {
     ACTIVE = 'active',
-    WASTE_EXPIRED = 'waste_expired',
-    WASTE_DEPLETED = 'waste_depleted',
+    WASTE_EXPIRED = 'expired',
+    WASTE_DEPLETED = 'depleted',
+    DISPOSED = 'disposed',
   }
   
 

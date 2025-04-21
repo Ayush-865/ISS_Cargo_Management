@@ -1,167 +1,75 @@
-# National Space Hackathon Project
+# 🚀 Intelligent ISS Cargo Management & Stowage Advisor
 
-This repository contains a full-stack application for the National Space Hackathon with a Python Flask backend and Next.js frontend.
+**Solving Space Stowage for Spacefarers**  
+*A project developed for the ISRO x IIT Delhi Space Innovation Challenge.*
 
-**Docker Hub:** [https://hub.docker.com/r/bhavikpunmiya/national-space-hackathon](https://hub.docker.com/r/bhavikpunmiya/national-space-hackathon)
 
-**Backend URL:** [https://national-space-hackathon-91717359690.us-central1.run.app/](https://national-space-hackathon-91717359690.us-central1.run.app/)
+## 🎥 Video Demonstration
 
-**Research Paper & Report:** [https://drive.google.com/file/d/1pxMhns39Y0feQn_kL--_e1JCguZMZRMR/view?usp=sharing](https://drive.google.com/file/d/1pxMhns39Y0feQn_kL--_e1JCguZMZRMR/view?usp=sharing)
+[![Watch the Demo](https://img.shields.io/badge/Click%20to%20Watch-Demo%20Video-blue?style=for-the-badge&logo=youtube)](https://github.com/user-attachments/assets/23cf379a-3c46-4efd-b502-5d7462cd6b4b)
 
-**Video/Demo Link:** [https://drive.google.com/file/d/13MXXCcvZwoIqTtRkCzUBV5I-Fgd0JS9i/view?usp=sharing](https://drive.google.com/file/d/13MXXCcvZwoIqTtRkCzUBV5I-Fgd0JS9i/view?usp=sharing).
+---
 
-## Project Structure
+## 🚧 Problem Statement
 
-```
-├── backend/               # Python Flask backend
-│   ├── app/               # Main application code
-│   │   ├── main.py        # Entry point for the backend
-│   ├── requirements.txt   # Python dependencies
-│
-├── frontend/              # Next.js frontend
-│   ├── src/               # Source code
-│   ├── package.json       # Node.js dependencies
-│
-├── dockerfile             # Docker configuration
-├── start.sh               # Service startup script
-├── simple_checker.sh      # Automated testing script
-```
+Managing cargo aboard the **International Space Station (ISS)** is a highly complex and manual task. Astronauts currently spend **~25% of their mission time** on stowage operations — storing, retrieving, and organizing items.
 
-## Setup Instructions
+### 🔴 Key Challenges:
 
-### Using Docker (Recommended)
+- ⏱️ **Wasted Time**: Reduces availability for research and maintenance  
+- ❗ **Slow Retrieval**: Critical items may be hard to locate during emergencies  
+- 📦 **Poor Space Utilization**: Limited volume leads to inefficient storage patterns  
 
-The easiest way to run the application is using Docker:
+---
 
-1. Build the Docker image:
-```bash
-docker build -t space-app .
-```
+## 💡 Our Solution
 
-2. Run the container:
-```bash
-docker run -p 8000:8000 -p 3000:3000 space-app
-```
+An **Intelligent Stowage Advisor** powered by AI/ML and smart heuristics to:
 
-### Pushing to Docker Hub
+✅ Automate cargo placement, retrieval, and rearrangement  
+✅ Streamline waste and return logistics  
+✅ Save astronaut time and improve ISS operational efficiency  
 
-To share your application with others via Docker Hub:
+---
 
-1. Create a Docker Hub account at https://hub.docker.com/
-2. Login to Docker Hub:
-```bash
-docker login
-```
+## 🔑 Features
 
-3. Tag your image with your Docker Hub username:
-```bash
-docker tag space-app yourusername/space-app:latest
-```
+| Category                         | Description |
+|----------------------------------|-------------|
+| 📦 **Smart Placement**           | Suggests optimal locations based on space, priority, expiry, and container zones using 3D bin packing heuristics |
+| 🔍 **Fast Retrieval**            | Locates items with step-by-step guidance to minimize movement |
+| ♻️ **Rearrangement Advisor**     | Recommends moving items to make space for new cargo |
+| 🚮 **Waste Management**          | Identifies expired/depleted items, plans optimal disposal or return |
+| ⏱️ **Time Simulation**           | Forecasts usage and expiry for mission planning |
+| 🧭 **3D Container Views**        | Interactive top, side, and front perspectives |
+| 🤖 **AI Chatbot (RAG-based)**    | Natural language queries on inventory and status |
+| 📋 **Comprehensive Inventory**   | Searchable, filterable lists of all items and containers |
+| 📝 **Action Logging**            | Traceable logs of key user actions |
+| 🔁 **CSV Import/Export**         | Easy integration with existing systems |
 
-4. Push the image to Docker Hub:
-```bash
-docker push yourusername/space-app:latest
-```
+---
 
-5. Others can then pull and run your image:
-```bash
-docker pull yourusername/space-app:latest
-docker run -p 8000:8000 -p 3000:3000 yourusername/space-app:latest
-```
+## 🧱 Tech Stack
 
-### Automated Testing
+<p align="center">
+  <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" />
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+  <img src="https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+</p>
 
-The repository includes a checker script to verify the application's functionality:
+- **Backend:** Rust  
+- **Frontend:** Next.js  
+- **Database:** SQLite  
+- **Deployment:** Docker  
 
-1. Make the script executable:
-```bash
-chmod +x simple_checker.sh
-```
+---
 
-2. Run the checker (requires sudo):
-```bash
-sudo ./simple_checker.sh <github_repo_url>
-```
+## 👥 Team & Contributors
 
-The script will:
-- Clone the repository
-- Build the Docker image
-- Run the container
-- Test the placement endpoint
-- Clean up resources
-
-### Manual Setup
-
-If you prefer to run the services separately without Docker:
-
-#### Backend Setup
-
-```bash
-# Navigate to the backend directory
-cd backend
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Run the Flask application
-python -m app.main
-```
-
-#### Frontend Setup
-
-```bash
-# Navigate to the frontend directory
-cd frontend
-
-# Install Node.js dependencies
-npm i --legacy-peer-deps
-
-# Build the frontend
-npm run build
-
-# Start the frontend server
-npm run start
-```
-
-## Accessing the Application
-
-Once running, the application can be accessed at:
-
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-
-## API Endpoints
-
-The backend provides several API endpoints including:
-
-- `GET /`: API status endpoint
-- `GET /api/client/iss_cargo`: ISS cargo management data
-- `POST /api/placement`: Cargo placement endpoint
-
-Additional endpoints are available for placement, simulation, waste management, and search functionality.
-
-## Development
-
-When making changes to the codebase:
-
-1. For backend changes, restart the Flask server
-2. For frontend changes, Next.js supports hot-reloading in development mode
-
-## Troubleshooting
-
-If you encounter issues with Node.js dependencies, try using the `--legacy-peer-deps` flag:
-
-```bash
-npm i --legacy-peer-deps
-```
-
-For Docker-related issues, ensure Docker is correctly installed and running on your system.
-
-## Contributing
-
-Feel free to contribute by opening issues or submitting pull requests.
-
-## License
-
-This project is licensed under [MIT License](LICENSE).
-
+| Contributor | GitHub |
+|-------------|--------|
+| <img src="https://github.com/Ayush-865.png?size=100" width="50" style="border-radius: 50%"> | [Ayush Upadhyay](https://github.com/Ayush-865) |
+| <img src="https://github.com/Bhavik-punmiya.png?size=100" width="50" style="border-radius: 50%"> | [Bhavik Punmiya](https://github.com/Bhavik-punmiya) |
+| <img src="https://github.com/EngineerAnishSharma.png?size=100" width="50" style="border-radius: 50%"> | [Anish Sharma](https://github.com/EngineerAnishSharma) |
+| <img src="https://github.com/Vipul-Mhatre.png?size=100" width="50" style="border-radius: 50%"> | [Vipul Mhatre](https://github.com/Vipul-Mhatre) |
